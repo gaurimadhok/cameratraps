@@ -1,89 +1,94 @@
+<!doctype html>
 
 <html>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <head>
-    <div class = "page-header">
-        <h1>Camera Traps </h1>
-        <button type="button" class="btn btn-warning pull-right">Help</button>
-    </div>
-	<title>Quick Start - Leaflet</title>
-
+    <title>Quick Start - Leaflet</title>
+    
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
-	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet/v0.7.7/leaflet.css" />
-	<script src="https://d19vzq90twjlae.cloudfront.net/leaflet/v0.7.7/leaflet.js"></script>
-
-	
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-9">
-          <div id="mapid" style="width: 100%; height: 100%;"></div>
-            <script>
-              function coordinate(x, y) {
-                this.x = x;
-                this.y = y;
-              }
-              var mymap = L.map('mapid').setView([10, -0.09], 2);
-              L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-                    minZoom: 2,
-                    maxZoom: 18,
-                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                    id: 'mapbox/satellite-v9'
-              }).addTo(mymap); 
-              var marker = L.marker([51.5, -0.09], {
-                  title: "Testing",
-                  riseOnHover: true,
-                  draggable: true,
-              });
-              marker.addTo(mymap);
-	            marker.on("dblclick", function(e){
-                  alert(e.latlng);
-             });
-            // mymap.on('dblclick', function(e){
-            //   var marker = new L.Marker(e.latlng, {"zIndexOffset": 9999});
-            // //   marker.addTo(mymap);
-            // // marker.on("click", function(){ alert("testing");});
-            //   mymap.addLayer(marker);
-            //   marker.bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>").openPopup();
-            //   var coord = e.latlng.toString().split(',');
- 						//   var lat = coord[0].split('(');
- 						//   var lng = coord[1].split(')');
-            //   arr.push(new coordinate(lat[1],lng[0]));
-            //   console.log("You clicked the map at latitude: " + lat[1] + " and longitude:" + lng[0]);
-            //   var remove = L.marker([arr[0].x,arr[0].y]);
-            // mymap.removeLayer(remove);
-            // });
-           
-            </script>
-        </div>
-        <div class="col-lg-3">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                  <h5 class="card-title">Menu</h5>
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-
-                  <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br>
-                  <a href="#" class="btn btn-primary">Analyze locations</a><br>
-                  <a href="#" class="btn btn-primary">Save locations</a>
-                </div>
-              </div>
-
-        </div>
-      </div>
+    
+    <div class="page-header">
+        <h1>Camera Traps </h1>
+        <button type="button" class="btn btn-warning pull-right">Help</button>
     </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-9">
+                <div id="mapid" style="width: 100%; height: 100%;"></div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Menu</h5>
+                        <p class="card-text">
+                            Some quick example text to build on the card title and make up the bulk of the card's content.
+                        </p>
+    
+                        <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br>
+                        <a href="#" class="btn btn-primary">Analyze locations</a><br>
+                        <a href="#" class="btn btn-primary">Save locations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function coordinate(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        var mymap = L.map('mapid').setView([10, -0.09], 2);
+        
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+              minZoom: 2,
+              maxZoom: 18,
+              attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+              id: 'mapbox/satellite-v9'
+        }).addTo(mymap); 
+        
+        var marker = L.marker([51.5, -0.09], {
+            title: "Testing",
+            riseOnHover: true,
+            draggable: true,
+        });
+        marker.addTo(mymap);
+        marker.on("dblclick", function(e){
+            alert(e.latlng);
+        });
+
+      // mymap.on('dblclick', function(e){
+      //   var marker = new L.Marker(e.latlng, {"zIndexOffset": 9999});
+      // //   marker.addTo(mymap);
+      // // marker.on("click", function(){ alert("testing");});
+      //   mymap.addLayer(marker);
+      //   marker.bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>").openPopup();
+      //   var coord = e.latlng.toString().split(',');
+                   //   var lat = coord[0].split('(');
+                   //   var lng = coord[1].split(')');
+      //   arr.push(new coordinate(lat[1],lng[0]));
+      //   console.log("You clicked the map at latitude: " + lat[1] + " and longitude:" + lng[0]);
+      //   var remove = L.marker([arr[0].x,arr[0].y]);
+      // mymap.removeLayer(remove);
+      // });
+     
+      </script>
+
 
     <script>
       var urlPrefix = "http://localhost:8081/"
@@ -131,7 +136,6 @@
         //     getCSV();
         // });
     </script>
-
 
 
 </body>
