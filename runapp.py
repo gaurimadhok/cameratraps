@@ -3,6 +3,7 @@ import sys
 import bottle
 import csv
 import json
+import pandas as pd
 
 #--------some stuff needed to get AJAX to work with bottle?--------#
 def enable_cors():
@@ -49,6 +50,19 @@ if __name__ == '__main__':
             for row in readCSV:
                 data['locations'].append([row[0], row[1], row[2]]) 
                 print(row[0], row[1], row[2])
+        bottle.response.content_type = 'application/json'
+        bottle.response.status = 200
+        return data
+
+    @webapp.route('/savetoCSV', method='POST')
+    def savetoCSV():
+        data = bottle.request.json
+        print("in save to csv")
+        print(data['geometry']['coordinates'][0])
+        df = pd.read_json(data)
+        print("after pandas")
+        export_csv = df.to_csv(r'C:\Users\gaurimadhok\Desktop\markers.csv')
+        print("after export csv")
         bottle.response.content_type = 'application/json'
         bottle.response.status = 200
         return data
