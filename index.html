@@ -46,11 +46,12 @@
 
     <script>
 
-        function coordinate(x, y) {
-            this.x = x;
-            this.y = y;
-        }
-
+        // function coordinate(x, y) {
+        //     this.x = x;
+        //     this.y = y;
+        // }
+        
+        // Create the map and add the tile layer to display
         var mymap = L.map('mapid').setView([10, -0.09], 2);
         
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -60,8 +61,9 @@
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
                 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
               id: 'mapbox/satellite-v9'
-        }).addTo(mymap); 
-        
+        }).addTo(mymap);
+
+        // Add a test marker
         var marker = L.marker([51.5, -0.09], {
             title: "Testing",
             riseOnHover: true,
@@ -71,88 +73,104 @@
         marker.on("dblclick", function(e){
             alert(e.latlng);
         });
-
-        // initialize the map on the "map" div with a given center and zoom
-
-// attaching function on map click
-mymap.on('click', onMapClick);
-
-// Script for adding marker on map click
-function onMapClick(e) {
-
-    var geojsonFeature = {
-        "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "Point",
-                "coordinates": [e.latlng.lat, e.latlng.lng]
-        }
-    }
-
-    var marker;
-
-    L.geoJson(geojsonFeature, {
         
-        pointToLayer: function(feature, latlng){
-            
-            marker = L.marker(e.latlng, {
+        // Attaching function on map click
+        mymap.on('click', onMapClick);
+
+        // Function for adding marker on map click
+        function onMapClick(e) {
+
+            var geojsonFeature = {
+                "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [e.latlng.lat, e.latlng.lng]
+                }
+            }
+
+            var marker;
+
+            L.geoJson(geojsonFeature, {
                 
-                title: "Resource Location",
-                alt: "Resource Location",
-                riseOnHover: true,
-                draggable: true,
+                pointToLayer: function(feature, latlng){
+                    
+                    marker = L.marker(e.latlng, {
+                        
+                        title: "Resource Location",
+                        alt: "Resource Location",
+                        riseOnHover: true,
+                        draggable: true,
 
-            }).bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>");
+                    }).bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>");
 
-            marker.on("popupopen", onPopupOpen);
-       
-            return marker;
-        }
-    }).addTo(mymap);
-}
-
-
-// Function to handle delete as well as other events on marker popup open
-function onPopupOpen() {
-
-    var tempMarker = this;
-
-    //var tempMarkerGeoJSON = this.toGeoJSON();
-
-    //var lID = tempMarker._leaflet_id; // Getting Leaflet ID of this marker
-
-    // To remove marker on click of delete
-    $(".marker-delete-button:visible").click(function () {
-        mymap.removeLayer(tempMarker);
-    });
-}
-
-var savetoCSV = function() {
-    var allMarkersObjArray = [];//new Array();
-    var allMarkersGeoJsonArray = [];//new Array();
-
-    $.each(mymap._layers, function (ml) {
-        //console.log(map._layers)
-        if (mymap._layers[ml].feature) {
+                    marker.on("popupopen", onPopupOpen);
             
-            allMarkersObjArray.push(this)
-            allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+                    return marker;
+                }
+            }).addTo(mymap);
         }
-    })
-    console.log(allMarkersGeoJsonArray['0']);
-    console.log(allMarkersGeoJsonArray[0].geometry.coordinates);
-    alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
-    $.ajax({
-        url: urlPrefix+"savetoCSV",
-        type: "POST",
-        contentType: "application/json", 
-        data: JSON.stringify(allMarkersGeoJsonArray),
-        success: function(response) {
-           //Some Code here
-           alert("sent to backend");
-     }
-    });
-}
+
+
+        // Function to handle delete as well as other events on marker popup open
+        function onPopupOpen() {
+
+            var tempMarker = this;
+
+            //var tempMarkerGeoJSON = this.toGeoJSON();
+
+            //var lID = tempMarker._leaflet_id; // Getting Leaflet ID of this marker
+
+            // To remove marker on click of delete
+            $(".marker-delete-button:visible").click(function () {
+                mymap.removeLayer(tempMarker);
+            });
+        }
+
+        // Function to get all markers currently on mymap
+        function getAllMarkersOnMap(){
+            var allMarkersList = [];//new Array();
+            mymap.eachLayer(function(layer) {
+                if(layer instanceof L.Marker) {
+                    allMarkersList.push(layer._latlng);
+                }
+            });
+            return allMarkersList
+        }
+        // Test the function with the test marker
+        var all_markers_on_map_test = getAllMarkersOnMap()
+        console.log(all_markers_on_map_test)
+
+        // Function to save all markers on map to CSV file
+        var savetoCSV = function() {
+            var all_markers_on_map_current = getAllMarkersOnMap()
+            alert("total markers on map: "+ all_markers_on_map_current.length)
+            // var allMarkersObjArray = [];//new Array();
+            // var allMarkersGeoJsonArray = [];//new Array();
+            
+            // $.each(mymap._layers, function (ml) {
+            //     console.log(mymap._layers)
+            //     if (mymap._layers[ml].feature) {
+                    
+            //         allMarkersObjArray.push(this)
+            //         allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+            //     }
+            // })
+            // console.log(allMarkersGeoJsonArray['0']);
+            // console.log(allMarkersGeoJsonArray[0]);
+            // console.log(allMarkersGeoJsonArray[0].geometry.coordinates);
+            // alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
+            $.ajax({
+                url: urlPrefix+"savetoCSV",
+                type: "POST",
+                contentType: "application/json", 
+                data: JSON.stringify(allMarkersGeoJsonArray),
+                success: function(response) {
+                //Some Code here
+                alert("sent to backend");
+            }
+            });
+        }
 
 // getting all the markers at once
 function getAllMarkers() {
@@ -185,7 +203,7 @@ function getAllMarkers() {
 
 $(".get-markers").on("click", getAllMarkers);
 
-      // mymap.on('dblclick', function(e){
+    // mymap.on('dblclick', function(e){
       //   var marker = new L.Marker(e.latlng, {"zIndexOffset": 9999});
       // //   marker.addTo(mymap);
       // // marker.on("click", function(){ alert("testing");});
