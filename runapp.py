@@ -42,29 +42,57 @@ if __name__ == '__main__':
     ## dynamic routes
     @webapp.route('/getCSV', method='POST')
     def getCSV():
+        # data = bottle.request.json
+        # with open('location_data_lat_long.csv') as csvfile:
+        #     readCSV = csv.reader(csvfile, delimiter=',')
+        #     count = 0
+        #     data['locations'] = []
+        #     for row in readCSV:
+        #         data['locations'].append([row[0], row[1], row[2]]) 
+        #         print(row[0], row[1], row[2])
+        # bottle.response.content_type = 'application/json'
+        # bottle.response.status = 200
+        # print(type(data))
+        # return data
         data = bottle.request.json
-        with open('location_data_lat_long.csv') as csvfile:
+        print(data)
+        with open(data) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             count = 0
-            data['locations'] = []
+            result = {}
+            result['locations'] = []
             for row in readCSV:
-                data['locations'].append([row[0], row[1], row[2]]) 
+                result['locations'].append([row[0], row[1], row[2]]) 
                 print(row[0], row[1], row[2])
         bottle.response.content_type = 'application/json'
         bottle.response.status = 200
-        return data
+        return result
 
+    # data is of type list
+    # s is of type string because json.dumps take a Python object and turns it into JSON string
+    # apparently, needed to return something of type string in order to go into success in ajax call
     @webapp.route('/savetoCSV', method='POST')
     def savetoCSV():
         data = bottle.request.json
         print("in save to csv")
-        print(data['geometry']['coordinates'][0])
-        df = pd.read_json(data)
+        print(data)
+        print(data[0])
+        print(data[0]['lat'])
+        print(type(data))
+        # with open('data.json', 'w') as write_file:
+        #     json.dump(data, write_file, indent=2)
+        s = json.dumps(data)
+        # with open('s.json', 'w') as write_file:
+        #     json.dump(s, write_file, indent=2)
+        print(s)
+        print(type(s))
+        df = pd.read_json(s)
+        df.to_csv('markers.csv')
         print("after pandas")
-        export_csv = df.to_csv(r'C:\Users\gaurimadhok\Desktop\markers.csv')
         print("after export csv")
         bottle.response.content_type = 'application/json'
         bottle.response.status = 200
-        return data
+        print("before return")
+        return s
 
     webapp.run(**webapp_server_kwargs)

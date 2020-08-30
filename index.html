@@ -11,15 +11,19 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    
+    <link rel="stylesheet" type="text/css" href="bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
     
     <div class="page-header">
-        <h1>Camera Traps </h1>
-        <button type="button" class="btn btn-warning pull-right">Help</button>
+        <h1 style="margin-left: 15px">Camera Traps </h1>
+        <div class="popup" onclick="helpButton()" style="float: right; margin-right: 50px; margin-bottom: 50px">Help
+            <span class="popuptext" id="myPopup" style="display: none">Popup text...</span>
+          </div>
+        <!-- <button type="button" class="btn btn-warning pull-right" id="help" onclick="helpButton()">Help</button> -->
     </div>
     
     <div class="container-fluid">
@@ -32,12 +36,14 @@
                     <div class="card-body">
                         <h5 class="card-title">Menu</h5>
                         <p class="card-text">
-                            Some quick example text to build on the card title and make up the bulk of the card's content.
                         </p>
     
-                        <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br>
-                        <a href="#" class="btn btn-primary">Analyze locations</a><br>
-                        <a href="#" class="btn btn-primary" onclick="savetoCSV()">Save locations</a>
+                        <!-- <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br> -->
+                        <input type="file" class="menu" id="file-selector" multiple/>
+                        <input type="button" class="menu" value="Analyze Locations"><br>
+                        <input type="button" class="menu" value="Save Locations" onclick="savetoCSV()">
+                        <!-- <a href="#" class="btn btn-primary">Analyze locations</a><br>
+                        <a href="#" class="btn btn-primary" onclick="savetoCSV()">Save locations</a> -->
                     </div>
                 </div>
             </div>
@@ -45,6 +51,149 @@
     </div>
 
     <script>
+        function helpButton() {
+            //document.getElementById('help').bindPopup("here is help");
+            var popup = document.getElementById("myPopup");
+            popup.classList.toggle("show");
+        }
+        const fileSelector = document.getElementById('file-selector');
+        fileSelector.addEventListener('change',(event) => {
+            const fileList = event.target.files;
+            console.log(fileList);
+            console.log(fileList[0].name);
+            console.log(fileList[0].type);
+            let reader = new FileReader();
+            reader.readAsText(fileList[0]);
+            reader.onload = function() {
+                var csv = reader.result;
+                console.log(csv);
+                var allLines = csv.split(/\r\n|\n/);
+                var lines = [];
+                for(var i=0; i < allLines.length; i++) {
+                    var data = allLines[i].split(',');
+                    var tarr = [];
+                    for(var j=0; j < data.length; j++) {
+                        tarr.push(data[j]);
+                    }
+                    lines.push(tarr);
+                }
+                console.log(lines);
+                console.log(lines[1][0]);
+                console.log(lines[1][1]);
+                for (i=1; i<lines.length - 1; i++){
+                        console.log(lines[i]);
+                        var geojsonFeature = {
+        "type": "Feature",
+            "properties": {},
+            "geometry": {
+                "type": "Point",
+                "coordinates": [lines[i][1], lines[i][2]]
+        }
+    }
+
+    var marker;
+    var id = lines[i][0];
+    L.geoJson(geojsonFeature, {
+        
+        pointToLayer: function(feature, latlng){
+            
+            marker = L.marker([lines[i][1],lines[i][2]], {
+                
+                title: "Resource Location",
+                alt: "Resource Location",
+                riseOnHover: true,
+                draggable: true,
+
+            }).bindPopup("<input type='button' value=" + id + "'Delete this marker' width='900' maxHeight='300'/>");
+
+            marker.on("popupopen", onPopupOpen);
+       
+            return marker;
+        }
+    }).addTo(mymap);
+                }
+            }
+        });
+    
+            // var lines = reader.onload();
+            // console.log(lines);
+            // console.log(lines[0]);
+            // console.log(lines[1]);
+            // reader.onload = function() {
+            //     data = reader.result;
+            //     console.log(data);
+            //     console.log(data[1]);
+            //     console.log(data[1][0]);
+            //     console.log(data[1][1]);
+            // }
+    
+        //     $.ajax({
+        //         type: "POST",
+        //         url: urlPrefix+"getCSV",
+        //         contentType: "application/json",
+        //         data: JSON.stringify(fileList[0].name),
+        //         success: function(data){
+        //             console.log(data['locations'].length);
+        //             for (i=1; i<data['locations'].length; i++){
+        //                 console.log(data['locations'][i]);
+        //                 var geojsonFeature = {
+        // "type": "Feature",
+        //     "properties": {},
+        //     "geometry": {
+        //         "type": "Point",
+        //         "coordinates": [data['locations'][i][1], data['locations'][i][2]]
+        // }
+    //         $.ajax({
+    //             type: "POST",
+    //             url: urlPrefix+"getCSV",
+    //             contentType: "application/json",
+    //             data: JSON.stringify(fileList[0].name),
+    //             success: function(data){
+    //                 console.log(data['locations'].length);
+    //                 for (i=1; i<data['locations'].length; i++){
+    //                     console.log(data['locations'][i]);
+    //                     var geojsonFeature = {
+    //     "type": "Feature",
+    //         "properties": {},
+    //         "geometry": {
+    //             "type": "Point",
+    //             "coordinates": [data['locations'][i][1], data['locations'][i][2]]
+    //     }
+    // }
+
+    // var marker;
+    // var id = data['locations'][i][0];
+    // L.geoJson(geojsonFeature, {
+        
+    //     pointToLayer: function(feature, latlng){
+            
+    //         marker = L.marker([data['locations'][i][1],data['locations'][i][2]], {
+                
+    //             title: "Resource Location",
+    //             alt: "Resource Location",
+    //             riseOnHover: true,
+    //             draggable: true,
+
+    //         }).bindPopup("<input type='button' value=" + id + "'Delete this marker' width='900' maxHeight='300'/>");
+
+    //         marker.on("popupopen", onPopupOpen);
+       
+    //         return marker;
+    //     }
+    // }).addTo(mymap);
+    //                     // var marker = L.marker([data['locations'][i][1],data['locations'][i][2]], {
+    //                     //     title: "Resource Location",
+    //                     //     alt: "Resource Location",
+    //                     //     riseOnHover: true,
+    //                     //     draggable: true,
+    //                     // }).bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>");
+    //                     // marker.on("popupopen", onPopupOpen);
+    //                     // marker.addTo(mymap);
+    //                 }
+    //             },
+    //             error: notifyFail
+    //         });
+    //     });
 
         function coordinate(x, y) {
             this.x = x;
@@ -127,32 +276,80 @@ function onPopupOpen() {
     });
 }
 
-var savetoCSV = function() {
-    var allMarkersObjArray = [];//new Array();
-    var allMarkersGeoJsonArray = [];//new Array();
+// var savetoCSV = function() {
+//     var allMarkersObjArray = [];//new Array();
+//     var allMarkersGeoJsonArray = [];//new Array();
 
-    $.each(mymap._layers, function (ml) {
-        //console.log(map._layers)
-        if (mymap._layers[ml].feature) {
+//     $.each(mymap._layers, function (ml) {
+//         //console.log(map._layers)
+//         if (mymap._layers[ml].feature) {
             
-            allMarkersObjArray.push(this)
-            allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+//             allMarkersObjArray.push(this)
+//             allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+//         }
+//     })
+//     console.log(allMarkersGeoJsonArray['0']);
+//     console.log(allMarkersGeoJsonArray[0].geometry.coordinates);
+//     alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
+//     $.ajax({
+//         url: urlPrefix+"savetoCSV",
+//         type: "POST",
+//         contentType: "application/json", 
+//         data: JSON.stringify(allMarkersGeoJsonArray),
+//         success: function(response) {
+//            //Some Code here
+//            alert("sent to backend");
+//      }
+//     });
+// }
+
+function getAllMarkersOnMap(){
+        var allMarkersList = [];//new Array();
+            mymap.eachLayer(function(layer) {
+                if(layer instanceof L.Marker) {
+                    allMarkersList.push(layer._latlng);
+                }
+            });
+            return allMarkersList
         }
-    })
-    console.log(allMarkersGeoJsonArray['0']);
-    console.log(allMarkersGeoJsonArray[0].geometry.coordinates);
-    alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
-    $.ajax({
-        url: urlPrefix+"savetoCSV",
-        type: "POST",
-        contentType: "application/json", 
-        data: JSON.stringify(allMarkersGeoJsonArray),
-        success: function(response) {
-           //Some Code here
-           alert("sent to backend");
-     }
-    });
-}
+        // Test the function with the test marker
+        var all_markers_on_map_test = getAllMarkersOnMap()
+        console.log(all_markers_on_map_test)
+
+        // Function to save all markers on map to CSV file
+        var savetoCSV = function() {
+            var all_markers_on_map_current = getAllMarkersOnMap()
+            alert("total markers on map: "+ all_markers_on_map_current.length)
+            console.log(all_markers_on_map_current[0])
+            console.log(JSON.stringify(all_markers_on_map_current))
+            // var allMarkersObjArray = [];//new Array();
+            // var allMarkersGeoJsonArray = [];//new Array();
+
+
+           // allMarkersObjArray.push(this)	            // $.each(mymap._layers, function (ml) {
+            //allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))	            //     console.log(mymap._layers)
+            //     if (mymap._layers[ml].feature) {
+
+            //         allMarkersObjArray.push(this)
+            //         allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+            //     }
+            // })
+            // console.log(allMarkersGeoJsonArray['0']);
+            // console.log(allMarkersGeoJsonArray[0]);
+            // console.log(allMarkersGeoJsonArray[0].geometry.coordinates);
+            // alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
+            $.ajax({
+                url: urlPrefix+"savetoCSV",
+                type: "POST",
+                contentType: "application/json", 
+                data: JSON.stringify(all_markers_on_map_current),
+                success: function(data) {
+                    console.log("done");
+                },
+                error: notifyFail
+            });
+        }	        
+
 
 // getting all the markers at once
 function getAllMarkers() {
@@ -231,7 +428,8 @@ $(".get-markers").on("click", getAllMarkers);
     }
 
     var marker;
-
+    var marker_display = data['locations'][i][0] + 'Delete this marker';
+    console.log(marker_display);
     L.geoJson(geojsonFeature, {
         
         pointToLayer: function(feature, latlng){
@@ -243,8 +441,8 @@ $(".get-markers").on("click", getAllMarkers);
                 riseOnHover: true,
                 draggable: true,
 
-            }).bindPopup("<input type='button' value='Delete this marker' class='marker-delete-button'/>");
-
+            }).bindPopup("<input type='button' value='data['locations'][i][0]' class='marker-delete-button'/>");
+            //break it up into multiple strings
             marker.on("popupopen", onPopupOpen);
        
             return marker;
